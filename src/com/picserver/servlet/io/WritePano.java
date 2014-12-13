@@ -16,9 +16,12 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.picserver.bean.PanoBean;
 import com.picserver.config.SystemConfig;
+import com.picserver.hbase.HbaseWriter;
 import com.picserver.picture.PictureWriter;
 import com.picserver.thread.SyncThread;
+import com.picserver.utils.DateUtil;
 
 /**
  * Servlet implementation class WritePano
@@ -68,26 +71,34 @@ public class WritePano extends HttpServlet {
 					FileItem item = (FileItem)iter.next();			
 					
 					if (item.isFormField()) {  		//若为普通表单
-					
 						String name = item.getFieldName();
 						if(name.equals("uid")) {
 							uid = item.getString();
-							uid = new String(uid.getBytes("iso-8859-1"),"utf-8");
 						} 
 
 					} else {
 						String hdfsPath = HDFS_UPLOAD_ROOT + "/" + uid + "/Pano/" ;
 						
 						flag = PWriter.uploadToHdfs(hdfsPath,item, uid);
-					}
+						
+						HbaseWriter writer=new HbaseWriter();
+					    PanoBean pano=new PanoBean();
+					    pano.setKey(item.getName()+uid);
+					    pano.setName(item.getName());
+					    pano.setSize(String.valueOf(item.getSize()));
+					    pano.setUid(uid);
+					    pano.setPath(hdfsPath);
+					    pano.setCreateTime(DateUtil.getCurrentDateStr());
+					    writer.putPanoBean(pano);
+					    System.out.println("更新数据库成功！");
+				}
 				}
 				
-			    
 			    
 				if(flag){
 					response.setContentType("text/html;charset=gb2312");
 					PrintWriter out = response.getWriter();
-					out.println("上传成功!");
+					out.print("success");
 					response.setStatus(200);
 					System.out.println("Upload success!");
 				} else {

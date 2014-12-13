@@ -9,6 +9,8 @@ import org.apache.hadoop.hbase.client.ResultScanner;
 import com.picserver.bean.HdBean;
 import com.picserver.bean.LogBean;
 import com.picserver.bean.MapfileBean;
+import com.picserver.bean.PanoBean;
+import com.picserver.bean.Pic3DBean;
 import com.picserver.bean.PictureBean;
 import com.picserver.bean.SpaceBean;
 import com.picserver.bean.UserBean;
@@ -148,6 +150,36 @@ public class HbaseReader {
 		ResultScanner rs = ho.QueryByColumn("cloud_hd", "attr", "uid", uid);
 		return lm.hdListMapping(rs);
 	}
+	
+	/**
+	 * 检索某用户的所有3D图片
+	 * @param uid
+	 * @return
+	 * @throws IOException
+	 */
+	public List<Pic3DBean> get3DList(String uid) throws IOException {
+		ResultScanner rs = ho.QueryByColumn("cloud_3d", "attr", "uid", uid);
+		return lm.pic3DListMapping(rs);
+	}
+	
+	/**
+	 * 检索某用户的pano
+	 * @param uid
+	 * @return
+	 * @throws IOException
+	 */
+	public List<PanoBean> getPanoList(String uid) throws IOException {
+		ResultScanner rs = ho.QueryByColumn("cloud_pano", "attr", "uid", uid);
+		return lm.panoListMapping(rs);
+	}
+	
+	public PanoBean getPanoBean(String key) throws IOException {
+		if (key == null)
+			return null;
+		Result rs = ho.QueryByRowKey("cloud_pano", key);
+		return bm.panoBeanMapping(rs, key);
+	}
+
 
 	/**
 	 * 根据主键获取mapfile
