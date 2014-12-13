@@ -55,12 +55,13 @@ public class HbaseReader {
 	 * @param uid   用户
 	 * @param sTime  起始时间
 	 * @param eTime   结束时间
+	 * @param num   数据量
 	 * @return
 	 * @throws IOException
 	 */
 	public List<PictureBean> getLimitPicture(String uid, String sTime,
-			String eTime) throws IOException {
-		ResultScanner rs = ho.QueryLimitPic(uid, sTime, eTime);
+			String eTime, int num) throws IOException {
+		ResultScanner rs = ho.QueryLimitPic(uid, sTime, eTime,num);
 		return lm.pictureListMapping(rs);
 	}
 
