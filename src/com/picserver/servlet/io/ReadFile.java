@@ -17,7 +17,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;  
 
 import com.picserver.hdfs.HdfsUtil;
-import com.sun.image.codec.jpeg.*;//sun公司仅提供了jpg图片文件的编码api  
+//import com.sun.image.codec.jpeg.*;//sun公司仅提供了jpg图片文件的编码api  
 
 import javax.imageio.stream.*;  
 
