@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.picserver.config.SystemConfig;
 import com.picserver.hdfs.HdfsUtil;
 import com.picserver.hdfs.MapfileUtils;
 import com.picserver.picture.PictureReader;
@@ -45,25 +46,24 @@ public class WaterMask extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		String imageName = request.getParameter("image");
 		String uid = request.getParameter("uid");
+		String MaskType = request.getParameter("type");
 		int offsetX = Integer.parseInt(request.getParameter("offsetX"));
 		int offsetY = Integer.parseInt(request.getParameter("offsetY"));
-		String MaskType = request.getParameter("type");
 		PictureReader PReader = new PictureReader();
 		String format = FileUtils.getFileExtension(imageName);
 		
 		try {
 
 			if (MaskType.equals("image")) {
+				int dissolve = Integer.parseInt(request.getParameter("dissolve"));
 				int width = Integer.parseInt(request.getParameter("width"));
 				int height = Integer.parseInt(request.getParameter("height"));
-				String LogoName = request.getParameter("logo");
-
+				String logo = request.getParameter("logo");
+				String logoPath = SystemConfig.getImagePath() + logo + "&uid=" + uid;
 				byte[] buffer = PReader.readPicture(imageName, uid);
-				byte[] mbyte = PReader.readPicture(LogoName, uid);
 
 				PictureUtil image = new PictureUtil(buffer,format);
-				// outbuffer = image.imgWaterMask(mbyte,width, height, offsetX,
-				// offsetY);
+				 outbuffer = image.imgWaterMask(logoPath,width,height,offsetX,offsetY,dissolve);
 			}
 
 			if (MaskType.equals("text")) {
