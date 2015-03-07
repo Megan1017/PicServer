@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
@@ -16,7 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.picserver.hdfs.HdfsUtil;
 import com.picserver.picture.PictureReader;
-import com.picserver.picture.PictureUtils;;
+import com.picserver.picture.PictureUtils;
+import com.picserver.picture.PictureUtil;
+import com.picserver.utils.FileUtils;
 
 /**
  * Servlet implementation class ScaleImage
@@ -34,11 +37,12 @@ public class ScaleImage extends HttpServlet {
 		String uid = request.getParameter("uid");
 		int width = Integer.parseInt(request.getParameter("width"));
 		String sheight = request.getParameter("height");
+		String format = FileUtils.getFileExtension(imageName);
 		
 		PictureReader PReader = new PictureReader();
 		try{
 		    	byte [] buffer = PReader.readPicture(imageName,uid);
-		    	PictureUtils image = new PictureUtils(buffer);
+		    	PictureUtil image = new PictureUtil(buffer,format);
 		    	byte [] outbuffer = null; 
 		    	if(sheight == null) {
 		    		outbuffer = image.scaleImage(width);
@@ -47,21 +51,26 @@ public class ScaleImage extends HttpServlet {
 		    		outbuffer = image.scaleImage(width, height);
 		    	}
 		    	
-				OutputStream output = response.getOutputStream();// 得到输出流  
-	            InputStream imageIn = new ByteArrayInputStream(outbuffer); 
-	            BufferedInputStream bis = new BufferedInputStream(imageIn);// 输入缓冲流  
-	            BufferedOutputStream bos = new BufferedOutputStream(output);// 输出缓冲流  
-	            byte data[] = new byte[4096];// 缓冲字节数  
-	            int size = 0;            
-	            size = bis.read(data);  
-	            while (size != -1) {  
-	                bos.write(data, 0, size);  
-	                size = bis.read(data);  
-	            }  
-	            bis.close();  
-	            bos.flush();// 清空输出缓冲流  
-	            bos.close();  
-	            output.close();
+				if (outbuffer != null) {
+					OutputStream output = response.getOutputStream();// 得到输出流
+					InputStream imageIn = new ByteArrayInputStream(outbuffer);
+					BufferedInputStream bis = new BufferedInputStream(imageIn);// 输入缓冲流
+					BufferedOutputStream bos = new BufferedOutputStream(output);// 输出缓冲流
+					byte data[] = new byte[4096];// 缓冲字节数
+					int size = 0;
+					size = bis.read(data);
+					while (size != -1) {
+						bos.write(data, 0, size);
+						size = bis.read(data);
+					}
+					bis.close();
+					bos.flush();// 清空输出缓冲流
+					bos.close();
+					output.close();
+				} else {
+					PrintWriter out = response.getWriter();
+					out.println("Please input the correct parameter.");
+				}
 	            
 		    }catch(Exception e){
 		    	e.printStackTrace();

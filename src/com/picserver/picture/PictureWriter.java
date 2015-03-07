@@ -41,6 +41,7 @@ public class PictureWriter {
 		}
 		double fileLength = (double) item.getSize() / 1024 / 1024;
 		// 文件大小判断
+		System.out.println(fileLength);
 		if (fileLength > MAX_FILE_SIZE) {
 			flag = uploadToHdfs(item, uid , space);
 		} else {
@@ -143,6 +144,7 @@ public class PictureWriter {
 			return false;
 		}
 	}
+	
 	/**
 	 * 将byte型文件写入hdfs中, 代码未测试
 	 * @author mpj
@@ -180,12 +182,13 @@ public class PictureWriter {
 	 */
 	public  boolean uploadToLocal(FileItem  item,  String uid , String space) {
 		try {		
-				
-				//本地目录为“根目录/用户名/时间戳"
+			
+			//本地目录为“根目录/用户名/时间戳"
 			final String LocalUidPath = SystemConfig.getSystemPath()
 					+ LOCAL_UPLOAD_ROOT + "/" + uid + '/';
 			final String LocalPath = LocalUidPath + '/' + space + '/' ;
-
+			System.out.println(LocalPath);
+			
 			//文件是否存在
 		    File LocalUidDir = new File(LocalUidPath);
             if(!LocalUidDir.exists()){
@@ -236,6 +239,7 @@ public class PictureWriter {
 	 */
 	public  void  localDirSync(String LocalPath, String uid , String space) throws Exception {
 		File LocalDir = new File(LocalPath);
+		System.out.println(LocalDir.getPath());
 		double DirSize = getDirSize(LocalDir);
 		String filePath =  HDFS_UPLOAD_ROOT + "/" + uid + "/SmallFile/" + DateUtil.getCurrentDateStr();
 		
